@@ -1,16 +1,19 @@
-package org.firstinspires.ftc.teamcode.pedroPathing.tuners_tests.localization;
+package pedroPathing.tuners_tests.localization;
 
-import com.bylazar.ftcontrol.panels.Panels;
-import com.bylazar.ftcontrol.panels.configurables.annotations.Configurable;
-import com.bylazar.ftcontrol.panels.integration.TelemetryManager;
-import com.bylazar.ftcontrol.panels.json.Look;
-import com.pedropathing.follower.Follower;
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import com.pedropathing.localization.PoseUpdater;
 import com.pedropathing.util.DashboardPoseTracker;
 import com.pedropathing.util.Drawing;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+
+import pedroPathing.constants.FConstants;
+import pedroPathing.constants.LConstants;
 
 /**
  * This is the TurnTuner OpMode. This tracks the turning movement of the robot and displays the
@@ -25,13 +28,13 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
  * @author Anyi Lin - 10158 Scott's Bots
  * @version 1.0, 5/6/2024
  */
-//@Configurable
+@Config
 @Autonomous(name = "Turn Localizer Tuner", group = ".Localization")
 public class TurnTuner extends OpMode {
-    private Follower follower;
+    private PoseUpdater poseUpdater;
     private DashboardPoseTracker dashboardPoseTracker;
 
-    private TelemetryManager telemetryM;
+    private Telemetry telemetryA;
 
     public static double ANGLE = 2 * Math.PI;
 
@@ -40,15 +43,16 @@ public class TurnTuner extends OpMode {
      */
     @Override
     public void init() {
-        follower = Constants.createFollower(hardwareMap);
+        Constants.setConstants(FConstants.class, LConstants.class);
+        poseUpdater = new PoseUpdater(hardwareMap, FConstants.class, LConstants.class);
 
-        dashboardPoseTracker = follower.getDashboardPoseTracker();
+        dashboardPoseTracker = new DashboardPoseTracker(poseUpdater);
 
-        telemetryM = Panels.getTelemetry();
-        telemetryM.debug("Turn your robot " + ANGLE + " radians. Your turn ticks to inches will be shown on the telemetry.");
-        telemetryM.update(telemetry);
+        telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
+        telemetryA.addLine("Turn your robot " + ANGLE + " radians. Your turn ticks to inches will be shown on the telemetry.");
+        telemetryA.update();
 
-        Drawing.drawRobot(follower.getPose());
+        Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
         Drawing.sendPacket();
     }
 
@@ -58,15 +62,14 @@ public class TurnTuner extends OpMode {
      */
     @Override
     public void loop() {
-        follower.update();
+        poseUpdater.update();
 
-        telemetryM.debug("total angle", follower.getTotalHeading());
-        telemetryM.debug("The multiplier will display what your turn ticks to inches should be to scale your current angle to " + ANGLE + " radians.");
-        telemetryM.debug("multiplier", ANGLE / (follower.getTotalHeading() / follower.getPoseTracker().getLocalizer().getTurningMultiplier()));
-        telemetryM.update(telemetry);
+        telemetryA.addData("total angle", poseUpdater.getTotalHeading());
+        telemetryA.addLine("The multiplier will display what your turn ticks to inches should be to scale your current angle to " + ANGLE + " radians.");
+        telemetryA.addData("multiplier", ANGLE / (poseUpdater.getTotalHeading() / poseUpdater.getLocalizer().getTurningMultiplier()));
 
-        Drawing.drawPoseHistory(dashboardPoseTracker);
-        Drawing.drawRobot(follower.getPose());
+        Drawing.drawPoseHistory(dashboardPoseTracker, "#4CAF50");
+        Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
         Drawing.sendPacket();
     }
 }
