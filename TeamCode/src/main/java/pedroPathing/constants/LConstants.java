@@ -8,8 +8,8 @@ public class LConstants {
     static {
         TwoWheelConstants.forwardTicksToInches = .001989436789;
         TwoWheelConstants.strafeTicksToInches = .001989436789;
-        TwoWheelConstants.forwardY = -4.83;//inch,not yet
-        TwoWheelConstants.strafeX = 0.01;//not yet
+        TwoWheelConstants.forwardY = -4.83;
+        TwoWheelConstants.strafeX = 0.01;
         TwoWheelConstants.forwardEncoder_HardwareMapName = "RightBehindMotor";//parallel
         TwoWheelConstants.strafeEncoder_HardwareMapName = "LeftFrontMotor";//perpendicular
         TwoWheelConstants.forwardEncoderDirection = Encoder.FORWARD;//FORWARD
