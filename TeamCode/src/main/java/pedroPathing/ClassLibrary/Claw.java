@@ -46,4 +46,10 @@ public class Claw {
             Act(Action.Open);
         }
     }
+    public void Capture(){
+        Act(Action.Close);
+    }
+    public void Open(){
+        Act(Action.Open);
+    }
 }

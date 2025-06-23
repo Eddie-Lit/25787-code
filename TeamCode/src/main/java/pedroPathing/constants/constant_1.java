@@ -1,5 +1,7 @@
 package pedroPathing.constants;
 
+import com.sun.tools.javac.code.Symbol;
+
 public class constant_1 {
     public static final double CLAW_CLOSE_POSITION = 0.185;
     public static final double CLAW_OPEN_POSITION = 0.25;
@@ -21,4 +23,7 @@ public class constant_1 {
     public static final double ARM_RIGHT_POST_TERRACE_POSITION = 1-ARM_LEFT_POST_TERRACE_POSITION;
     public static final String ARM_LEFT_CONFIG_NAME = "intakeLeftServo";
     public static final String ARM_RIGHT_CONFIG_NAME = "intakeRightServo";
+    public static final double WRIST_TERRACE_POSITION = 0.13;
+    public static final double WRIST_NORMAL_POSITION = 0;
+    public static final String WRIST_CONFIG_NAME = "Wrist";
 }

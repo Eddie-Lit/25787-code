@@ -9,6 +9,7 @@ import pedroPathing.ClassLibrary.Arm;
 import pedroPathing.ClassLibrary.Claw;
 import pedroPathing.ClassLibrary.Spin;
 import pedroPathing.ClassLibrary.Terrace;
+import pedroPathing.ClassLibrary.Wrist;
 
 public class Algorithm_1 {
     public Claw finger = new Claw();
@@ -16,6 +17,7 @@ public class Algorithm_1 {
     public Terrace terrace = new Terrace();
     public Arm arm_left = new Arm();
     public Arm arm_right = new Arm();
+    public Wrist wrist = new Wrist();
     public Algorithm_1(HardwareMap hardwareMap){
         finger.Claw = hardwareMap.get(Servo.class,constant_1.FORWARD_CLAW_CONFIG_NAME);
         finger.ClosePosition = constant_1.CLAW_CLOSE_POSITION;
@@ -35,6 +37,8 @@ public class Algorithm_1 {
         arm_right.CapturePosition = constant_1.ARM_RIGHT_CAPTURE_POSITION;
         arm_right.PostCapturePosition = constant_1.ARM_RIGHT_POST_CAPTURE_POSITION;
         arm_right.PostTerracePosition = constant_1.ARM_RIGHT_POST_TERRACE_POSITION;
+
+        wrist.Wrist = hardwareMap.get(Servo.class,constant_1.WRIST_CONFIG_NAME);
     }
 
 

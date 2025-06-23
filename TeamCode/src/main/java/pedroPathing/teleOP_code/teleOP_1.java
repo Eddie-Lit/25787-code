@@ -11,6 +11,7 @@ import pedroPathing.constants.Algorithm_1;
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
 
+
 /**
  * This is an example teleop that showcases movement and robot-centric driving.
  *
@@ -24,6 +25,7 @@ public class teleOP_1 extends OpMode {
     private Algorithm_1 Algorihthm;
     private boolean GP1_X_Flag = false;
     private boolean GP1_A_Flag = false;
+    private boolean GP1_Y_Flag = false;
     private final Pose startPose = new Pose(0,0,0);
 
     /** This method is call once when init is played, it initializes the follower **/
@@ -61,6 +63,7 @@ public class teleOP_1 extends OpMode {
         FingerController();
         SpinController();
         TerraceController();
+        PrepareCapture();
         /* Telemetry Outputs of our Follower */
         telemetry.addData("X", follower.getPose().getX());
         telemetry.addData("Y", follower.getPose().getY());
@@ -71,6 +74,17 @@ public class teleOP_1 extends OpMode {
 
     }
 
+    private void PrepareCapture() {
+        if(gamepad1.y && ! GP1_Y_Flag){
+            Algorihthm.finger.Open();
+            Algorihthm.arm_right.Capture();
+            Algorihthm.arm_left.Capture();
+            Algorihthm.terrace.Forward();
+            Algorihthm.spin.SpinInitial();
+        }
+        GP1_Y_Flag = gamepad1.y;
+    }
+
     private void TerraceController() {
         if(gamepad1.a && !GP1_A_Flag && !Algorihthm.terrace.TerraceFlag){
             Algorihthm.terrace.Switch();
@@ -78,7 +92,7 @@ public class teleOP_1 extends OpMode {
             Algorihthm.arm_right.PostTerrace();
             Algorihthm.arm_left.PostTerrace();
             Algorihthm.finger.TerraceSwitch();
-
+            Algorihthm.wrist.Switch();
         }
         GP1_A_Flag = gamepad1.a;
     }
@@ -93,10 +107,11 @@ public class teleOP_1 extends OpMode {
 
     private void FingerController(){
         if(gamepad1.x&&!GP1_X_Flag){
-            Algorihthm.finger.Switch();
+            Algorihthm.wrist.NormalPosition();
+            Algorihthm.arm_left.PostCapture();
+            Algorihthm.finger.Capture();
         }
         GP1_X_Flag = gamepad1.x;
-
 
 
 

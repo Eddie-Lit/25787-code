@@ -1,4 +1,7 @@
 package pedroPathing.ClassLibrary;
+import static pedroPathing.constants.constant_1.WRIST_NORMAL_POSITION;
+import static pedroPathing.constants.constant_1.WRIST_TERRACE_POSITION;
+
 import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -10,5 +13,22 @@ public class Wrist {
         Normal
     }
     public Servo Wrist;
-
+    public boolean WristFlag;
+    public void Act(Action ActionFlag){
+        if(ActionFlag==Action.Terrace){
+            Wrist.setPosition(WRIST_TERRACE_POSITION);
+        }if(ActionFlag==Action.Normal){
+            Wrist.setPosition(WRIST_NORMAL_POSITION);
+        }
+    }
+    public void Switch(){
+        if(WristFlag){
+            Act(Action.Terrace);
+        }else{
+            Act(Action.Normal);
+        }
+    }
+    public void NormalPosition(){
+        Act(Action.Normal);
+    }
 }

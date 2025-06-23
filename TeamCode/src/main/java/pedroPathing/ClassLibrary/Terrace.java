@@ -36,5 +36,8 @@ public class Terrace {
         }
 
     }
+    public void Forward(){
+        Act(Action.Forward);
+    }
 
 }
