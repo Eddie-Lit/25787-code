@@ -1,12 +1,18 @@
 package pedroPathing.teleOP_code;
 
+
+
+import static android.os.SystemClock.sleep;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.util.Constants;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import pedroPathing.ClassLibrary.Terrace;
+
 import pedroPathing.constants.Algorithm_1;
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
@@ -19,13 +25,15 @@ import pedroPathing.constants.LConstants;
  * @version 2.0, 12/30/2024
  */
 
-@TeleOp(name = "Example Robot-Centric Teleop", group = "Examples")
+@TeleOp(name = "Teleop_1", group = "Examples")
 public class teleOP_1 extends OpMode {
     private Follower follower;
     private Algorithm_1 Algorihthm;
     private boolean GP1_X_Flag = false;
     private boolean GP1_A_Flag = false;
     private boolean GP1_Y_Flag = false;
+    private boolean GP1_B_Flag = false;
+
     private final Pose startPose = new Pose(0,0,0);
 
     /** This method is call once when init is played, it initializes the follower **/
@@ -58,12 +66,13 @@ public class teleOP_1 extends OpMode {
         - Robot-Centric Mode: true
         */
 
-        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
+        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, gamepad1.right_stick_x, false);
         follower.update();
         FingerController();
         SpinController();
         TerraceController();
         PrepareCapture();
+        Test();
         /* Telemetry Outputs of our Follower */
         telemetry.addData("X", follower.getPose().getX());
         telemetry.addData("Y", follower.getPose().getY());
@@ -72,27 +81,40 @@ public class teleOP_1 extends OpMode {
         /* Update Telemetry to the Driver Hub */
         telemetry.update();
 
+        double power = -gamepad2.right_stick_y;
+        double safePower = Algorithm_1.applyPositionLimit(power);
+        Algorithm_1.slideMotor.setPower(safePower);
+    }
+
+
+    private void Test() {
+        if(gamepad1.b && ! GP1_B_Flag){
+            Algorihthm.finger.Open();
+        }
+        GP1_B_Flag = gamepad1.b;
     }
 
     private void PrepareCapture() {
         if(gamepad1.y && ! GP1_Y_Flag){
-            Algorihthm.finger.Open();
-            Algorihthm.arm_right.Capture();
-            Algorihthm.arm_left.Capture();
             Algorihthm.terrace.Forward();
+            sleep(100);
+            Algorihthm.arm_right.PostCapture();
+            Algorihthm.arm_left.PostCapture();
             Algorihthm.spin.SpinInitial();
+            Algorihthm.wrist.NormalPosition();
+            Algorihthm.finger.Open();
         }
         GP1_Y_Flag = gamepad1.y;
     }
 
     private void TerraceController() {
         if(gamepad1.a && !GP1_A_Flag && !Algorihthm.terrace.TerraceFlag){
-            Algorihthm.terrace.Switch();
             Algorihthm.spin.SpinInitial();
             Algorihthm.arm_right.PostTerrace();
             Algorihthm.arm_left.PostTerrace();
-            Algorihthm.finger.TerraceSwitch();
-            Algorihthm.wrist.Switch();
+            Algorihthm.finger.Open();
+            Algorihthm.wrist.Terrace();
+            Algorihthm.terrace.Side();
         }
         GP1_A_Flag = gamepad1.a;
     }
@@ -107,9 +129,14 @@ public class teleOP_1 extends OpMode {
 
     private void FingerController(){
         if(gamepad1.x&&!GP1_X_Flag){
+            Algorihthm.arm_left.Capture();
+            Algorihthm.arm_right.Capture();
+            sleep(100);
             Algorihthm.wrist.NormalPosition();
-            Algorihthm.arm_left.PostCapture();
             Algorihthm.finger.Capture();
+            sleep(300);
+            Algorihthm.arm_left.PostCapture();
+            Algorihthm.arm_right.PostCapture();
         }
         GP1_X_Flag = gamepad1.x;
 

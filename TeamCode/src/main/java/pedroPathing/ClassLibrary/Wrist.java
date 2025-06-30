@@ -17,12 +17,14 @@ public class Wrist {
     public void Act(Action ActionFlag){
         if(ActionFlag==Action.Terrace){
             Wrist.setPosition(WRIST_TERRACE_POSITION);
+            WristFlag = true;
         }if(ActionFlag==Action.Normal){
             Wrist.setPosition(WRIST_NORMAL_POSITION);
+            WristFlag = false;
         }
     }
     public void Switch(){
-        if(WristFlag){
+        if(!WristFlag){
             Act(Action.Terrace);
         }else{
             Act(Action.Normal);
@@ -30,5 +32,8 @@ public class Wrist {
     }
     public void NormalPosition(){
         Act(Action.Normal);
+    }
+    public void Terrace(){
+        Act(Action.Terrace);
     }
 }

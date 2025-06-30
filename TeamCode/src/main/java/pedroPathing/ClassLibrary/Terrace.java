@@ -29,7 +29,7 @@ public class Terrace {
         }
     }
     public void Switch(){
-        if(!TerraceFlag){
+        if(TerraceFlag){
             Act(Action.Forward);
         }else {
             Act(Action.Side);
@@ -38,6 +38,9 @@ public class Terrace {
     }
     public void Forward(){
         Act(Action.Forward);
+    }
+    public void Side(){
+        Act(Action.Side);
     }
 
 }

@@ -1,5 +1,8 @@
 package pedroPathing.constants;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -18,6 +21,8 @@ public class Algorithm_1 {
     public Arm arm_left = new Arm();
     public Arm arm_right = new Arm();
     public Wrist wrist = new Wrist();
+    public static DcMotor slideMotor = null;
+
     public Algorithm_1(HardwareMap hardwareMap){
         finger.Claw = hardwareMap.get(Servo.class,constant_1.FORWARD_CLAW_CONFIG_NAME);
         finger.ClosePosition = constant_1.CLAW_CLOSE_POSITION;
@@ -39,7 +44,27 @@ public class Algorithm_1 {
         arm_right.PostTerracePosition = constant_1.ARM_RIGHT_POST_TERRACE_POSITION;
 
         wrist.Wrist = hardwareMap.get(Servo.class,constant_1.WRIST_CONFIG_NAME);
-    }
 
+        slideMotor = hardwareMap.get(DcMotor.class, "slideMotor");
+        slideMotor.setDirection(DcMotor.Direction.FORWARD);
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //slideMotor.setPower(safePower);
+
+
+    }
+    public static double applyPositionLimit(double requestedPower) {
+        int currentPosition = slideMotor.getCurrentPosition();
+
+        if (currentPosition >= constant_1.MAX_POSITION - 50 && requestedPower > 0) {
+            return Math.max(0, requestedPower * ((constant_1.MAX_POSITION - currentPosition) / 50.0));
+        } else if (currentPosition <= constant_1.MIN_POSITION + 50 && requestedPower < 0) {
+            return Math.min(0, requestedPower * ((currentPosition - constant_1.MIN_POSITION) / 50.0));
+        } else {
+            return requestedPower;
+        }
+    }
 
 }
